@@ -43,7 +43,6 @@ const bosses =
         friendly_time: `3 часа`,
         boss: 'Йети'
     },
-    
     {
         string: '[Client thread/INFO]: [CHAT] Коровка из Коровёнки была повержена',
         time:  2.5 * (60 * (60 * 1000)),
@@ -58,13 +57,13 @@ const bosses =
     },
     {
         string: '[Client thread/INFO]: [CHAT] Небесный владыка был повержен',
-        time: 5* (60 * (60 * 1000)),
+        time: 5 * (60 * (60 * 1000)),
         friendly_time: `5 часов`,
         boss: 'Небесный владыка'
     }, 
     {
         string: '[Client thread/INFO]: [CHAT] Хранитель подводного мира был повержен',
-        time: 5* (60 * (60 * 1000)),
+        time: 5 * (60 * (60 * 1000)),
         friendly_time: `5 часов`,
         boss: 'Хранитель подводного мира'
     }, 
@@ -73,31 +72,39 @@ const bosses =
         time: 45 * (60 * 1000),
         friendly_time: `45 минут`,
         boss: 'Холуй'
-    }, 
-    
-     
-
+    },
 ]
+
+const log = `./last.txt`
+
 async function stringLog(){
-    const log = `./last.txt`;
     return new Promise((resolve, reject) => {
         if(fs.existsSync(log)){
             fs.readFile(log, "utf8", (err, data) => {
                 resolve(data)
             })
         }
+		else {
+			fs.open(log, 'w', (err) => {
+				if(err) throw err
+
+				fs.readFile(log, "utf8", (err, data) => {
+					resolve(data)
+				})
+			});
+		}
     })
 
 } 
 async function check(){
-    const log = process.env.APPDATA + '/.vimeworld/minigames/logs/latest.log';
+    const log = process.env.APPDATA + '/.vimeworld/minigames/logs/latest.log'
 
     if(fs.existsSync(log)){
         fs.readFile(log, "utf8", async (err, data) => {
             
-            const logString = await stringLog();
-            let delim = data.split("\n");
-            let string = delim[delim.length-2];
+            const logString = await stringLog()
+            let delim = data.split("\n")
+            let string = delim[delim.length-2]
 
             if(logString == string) return;
 
@@ -125,7 +132,7 @@ async function check(){
                         setTimeout(async function () {
                             console.log("\x07");
                         }, 1000);
-                    }, bosses[i]['time']);
+                    }, bosses[i]['time'])
                 }
             }
         });
@@ -136,8 +143,11 @@ async function check(){
 }
 
 async function start(){
+	process.stdout.write(
+		String.fromCharCode(27) + "]0;" + 'Prison Checker' + String.fromCharCode(7)
+	);
     console.log(`</> Приступаю к поиску боссов!\n`.blue)
     await setInterval(async function () {
         check()
-    }, 100);
+    }, 100)
 }
